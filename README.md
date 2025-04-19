@@ -2,15 +2,19 @@
 
 [Site](https://www.solapi.com/) |
 [Docs](https://docs.solapi.com/) |
-[Examples](https://github.com/solapi/solapi-go/tree/master/_examples) |
+[Examples](https://github.com/solapi/solapi-go/tree/master/examples) |
 
 문자 메시지 발송 및 조회 관련 기능들을 쉽게 사용하실 수 있도록 만들어진 SDK 입니다.
 
 ## Example
 
 ```go
-require (
-        github.com/solapi/solapi-go
+package main
+
+import (
+	"fmt"
+
+	"github.com/solapi/solapi-go/pkg/solapi"
 )
 
 func main() {
@@ -28,30 +32,33 @@ func main() {
 	params["message"] = message
 
 	// Call API Resource
-	result, err := client.Message.SendSimpleMessage(params)
+	result, err := client.Messages.SendSimpleMessage(params)
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
+
+	// Print Result
+	fmt.Printf("%+v\n", result)
 }
 ```
 
-[examples folder](https://github.com/solapi/solapi-go/tree/master/_examples)에서 자세한 예제파일들을 확인하세요.
+[examples folder](https://github.com/solapi/solapi-go/tree/master/examples)에서 자세한 예제파일들을 확인하세요.
 
 ## Installation
 
 ```
-go get github.com/solapi/solapi-go
+go get github.com/solapi/solapi-go/pkg/solapi
 ```
 
-## Configs
+## Project Structure
 
-```
-{
-  "APIKey": "NCSVYGF1IK5PUKDA",
-  "APISecret": "FSD4ER2WYPZQVDBPKMLOZVAWTGYBDTRW",
-  "Protocol": "https",
-  "Domain": "api.solapi.com",
-  "Prefix": "",
-  "AppId": "" // 이곳에 앱 아이디 입력 시 그룹 생성, 메시지 발송 시 추가로 입력할 필요 없습니다.
-}
-```
+이 프로젝트는 Go 표준 레이아웃을 따릅니다:
+
+- `pkg/solapi`: 메인 패키지 및 하위 패키지들
+  - `apirequest`: API 요청 관련 기능
+  - `cash`: 잔액 조회 관련 기능
+  - `messages`: 메시지 발송 및 조회 관련 기능
+  - `storage`: 파일 업로드 및 조회 관련 기능
+  - `types`: 데이터 타입 정의
+- `examples`: 예제 코드
