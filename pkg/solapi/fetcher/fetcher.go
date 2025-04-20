@@ -39,7 +39,7 @@ type Fetcher struct {
 func NewFetcherInstance(apiKey, apiSecret string) *Fetcher {
 	goos := runtime.GOOS
 	goVersion := runtime.Version()
-	osPlatform := fmt.Sprintf("%s/%s", goos, goVersion)
+	osPlatform := fmt.Sprintf("%s | %s", goos, goVersion)
 
 	fetcher := &Fetcher{
 		APIKey:     apiKey,
@@ -101,7 +101,6 @@ func NewFetcher(apiKey, apiSecret string) *Fetcher {
 
 	return fetcher
 }
-
 
 // GET method request
 func (f *Fetcher) GET(resource string, params map[string]string, customStruct interface{}) error {

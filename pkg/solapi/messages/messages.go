@@ -23,21 +23,31 @@ func (r *Messages) GetMessageList(params map[string]string) (types.MessageList, 
 	return result, nil
 }
 
-// SendSimpleMessage sends a simple message
-func (r *Messages) SendSimpleMessage(params map[string]interface{}) (types.SimpleMessage, error) {
+// Send sends a simple message
+func (r *Messages) Send(params map[string]interface{}) (types.MessageStruct, error) {
 	// Create a fetcher instance to access its properties
 	request := fetcher.NewFetcherInstance(r.Config["APIKey"], r.Config["APISecret"])
-	if _, ok := params["agent"]; ok {
-		delete(params, "agent")
+
+	// Get the messages array
+	messagesArray, ok := params["messages"].([]map[string]interface{})
+	if !ok {
+		// If messages key doesn't exist or is not an array of maps, wrap the entire params in a messages key
+		// as a single element in the array
+		messagesArray = []map[string]interface{}{params}
+		params = map[string]interface{}{
+			"messages": messagesArray,
+		}
 	}
 
+	// Create agent info
 	agent := map[string]string{"sdkVersion": request.SdkVersion, "osPlatform": request.OsPlatform}
-	if request.AppId != "" {
-		agent["appId"] = request.AppId
-	}
+	// TODO: Will fix
+	//if request.AppId != "" {
+	//	agent["appId"] = request.AppId
+	//}
 	params["agent"] = agent
 
-	result := types.SimpleMessage{}
+	result := types.MessageStruct{}
 	err := fetcher.Request("POST", "messages/v4/send-many/detail", params, &result, r.Config["APIKey"], r.Config["APISecret"])
 	if err != nil {
 		return result, err
@@ -52,9 +62,10 @@ func (r *Messages) CreateGroup(params map[string]string) (types.Group, error) {
 	request := fetcher.NewFetcherInstance(r.Config["APIKey"], r.Config["APISecret"])
 	params["sdkVersion"] = request.SdkVersion
 	params["osPlatform"] = request.OsPlatform
-	if request.AppId != "" {
-		params["appId"] = request.AppId
-	}
+	// TODO: Will fix
+	//if request.AppId != "" {
+	//	params["appId"] = request.AppId
+	//}
 	result := types.Group{}
 	err := fetcher.Request("POST", "messages/v4/groups", params, &result, r.Config["APIKey"], r.Config["APISecret"])
 	if err != nil {

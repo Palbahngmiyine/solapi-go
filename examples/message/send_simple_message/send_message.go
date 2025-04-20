@@ -25,7 +25,7 @@ func main() {
 	}
 
 	// Send the message
-	result, err := client.Messages.SendSimpleMessage(params)
+	result, err := client.Messages.Send(params)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return

@@ -6,8 +6,8 @@ type CustomError struct {
 	ErrorMessage string
 }
 
-// SimpleMessage struct
-type SimpleMessage struct {
+// MessageStruct struct
+type MessageStruct struct {
 	GroupId       string
 	MessageId     string
 	AccountId     string

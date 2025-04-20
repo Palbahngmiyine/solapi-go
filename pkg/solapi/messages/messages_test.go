@@ -1,22 +1,33 @@
 package messages
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"reflect"
 	"testing"
 
 	"github.com/solapi/solapi-go/pkg/solapi/types"
 )
 
+// getEnvOrDefault get environment value or default value.
+func getEnvOrDefault(key string, fallback string) string {
+	if _, exists := os.LookupEnv(key); exists {
+		return os.Getenv(key)
+	}
+	return fallback
+}
+
 // createMessagesInstance creates a Messages instance with the standard config
 func createMessagesInstance(serverURL string) *Messages {
+	context.TODO()
 	return &Messages{
 		Config: map[string]string{
-			"APIKey":    "test_api_key",
-			"APISecret": "test_api_secret",
+			"APIKey":    getEnvOrDefault("SOLAPI_API_KEY", "test_api_key"),
+			"APISecret": getEnvOrDefault("SOLAPI_API_SECRET", "test_api_secret"),
 			"Protocol":  "http",
 			"Domain":    serverURL[7:], // Remove "http://" prefix
 			"Prefix":    "",
@@ -50,8 +61,8 @@ func mockServer(t *testing.T, expectedMethod, expectedPath string, statusCode in
 	}))
 }
 
-// Test SendSimpleMessage
-func TestSendSimpleMessage(t *testing.T) {
+// Test SendMessage
+func TestSendMessage(t *testing.T) {
 	// Test cases
 	testCases := []struct {
 		name         string
@@ -63,19 +74,22 @@ func TestSendSimpleMessage(t *testing.T) {
 		{
 			name: "Successful message send",
 			params: map[string]interface{}{
-				"to":   "01000000000",
-				"from": "01000000000",
-				"text": "Test message",
-				"type": "SMS",
+				"messages": []map[string]interface{}{
+					{
+						"to":   "01000000000",
+						"from": "테스트 할 발신번호",
+						"text": "Test message",
+					},
+				},
 			},
-			mockResponse: types.SimpleMessage{
+			mockResponse: types.MessageStruct{
 				GroupId:       "G4V20180307105937H3PFASXMNJG2JID",
 				MessageId:     "M4V20180307105937H3PTASXMNJG2JID",
 				AccountId:     "12345678901234",
 				StatusMessage: "정상 접수(이통사로 접수 예정) ",
 				StatusCode:    "2000",
 				To:            "01000000000",
-				From:          "01000000000",
+				From:          "029302266",
 				Type:          "SMS",
 				Country:       "82",
 			},
@@ -85,10 +99,14 @@ func TestSendSimpleMessage(t *testing.T) {
 		{
 			name: "API error",
 			params: map[string]interface{}{
-				"to":   "01000000000",
-				"from": "01000000000",
-				"text": "Test message",
-				"type": "SMS",
+				"messages": []map[string]interface{}{
+					{
+						"to":   "01000000000",
+						"from": "01000000000",
+						"text": "Test message",
+						"type": "SMS",
+					},
+				},
 			},
 			mockResponse: types.CustomError{
 				ErrorCode:    "API_ERROR",
@@ -109,7 +127,7 @@ func TestSendSimpleMessage(t *testing.T) {
 			messages := createMessagesInstance(server.URL)
 
 			// Call the function
-			result, err := messages.SendSimpleMessage(tc.params)
+			result, err := messages.Send(tc.params)
 
 			// Check error
 			if (err != nil) != tc.expectError {
