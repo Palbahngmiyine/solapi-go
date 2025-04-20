@@ -18,7 +18,11 @@ import (
 )
 
 func main() {
-	client := solapi.NewClient()
+	// API Key와 API Secret Key는 테스트 시 활성화 된 키로 입력해주세요.
+	apiKey := os.Getenv("SOLAPI_API_KEY")
+	apiSecret := os.Getenv("SOLAPI_API_SECRET")
+
+	client := solapi.MessageService(apiKey, apiSecret)
 
 	// Message Data
 	// 관련 파라미터들은 https://docs.solapi.com에서 확인 가능합니다.
@@ -28,8 +32,11 @@ func main() {
 	message["text"] = "Test Message"
 	message["type"] = "SMS"
 
-	params := make(map[string]interface{})
-	params["message"] = message
+	params := map[string]interface{}{
+		"to":   "01000000000", // Recipient phone number
+		"from": "01000000000", // Sender phone number
+		"text": "This is a test message from solapi-go SDK",		
+	}
 
 	// Call API Resource
 	result, err := client.Messages.Send(params)
