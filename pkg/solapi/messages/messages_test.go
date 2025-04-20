@@ -1,7 +1,6 @@
 package messages
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -23,7 +22,6 @@ func getEnvOrDefault(key string, fallback string) string {
 
 // createMessagesInstance creates a Messages instance with the standard config
 func createMessagesInstance(serverURL string) *Messages {
-	context.TODO()
 	return &Messages{
 		Config: map[string]string{
 			"APIKey":    getEnvOrDefault("SOLAPI_API_KEY", "test_api_key"),
