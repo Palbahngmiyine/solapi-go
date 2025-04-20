@@ -32,7 +32,7 @@ func main() {
 	message["text"] = "Test Message"
 	message["type"] = "SMS"
 
-	params := map[string]interface{}{
+	params := []map[string]interface{}{
 		"to":   "01000000000", // Recipient phone number
 		"from": "01000000000", // Sender phone number
 		"text": "This is a test message from solapi-go SDK",		
