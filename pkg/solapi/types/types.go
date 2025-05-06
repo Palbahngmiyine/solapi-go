@@ -1,5 +1,10 @@
 package types
 
+type Config struct {
+	ApiKey    string
+	ApiSecret string
+}
+
 // CustomError struct
 type CustomError struct {
 	ErrorCode    string
@@ -126,15 +131,13 @@ type GroupMessageList struct {
 
 // KakaoOptions struct
 type KakaoOptions struct {
-	SenderKey    string
-	TemplateCode string
-	ButtonName   string
-	ButtonUrl    string
-	PfId         string
-	TemplateId   string
-	ImageId      string
-	DisableSms   bool
-	Buttons      []map[string]string
+	ButtonName string
+	ButtonUrl  string
+	PfId       string
+	TemplateId string
+	ImageId    string
+	DisableSms bool
+	Buttons    []map[string]string
 }
 
 // Message struct

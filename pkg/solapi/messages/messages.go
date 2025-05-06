@@ -9,13 +9,13 @@ import (
 
 // Messages struct
 type Messages struct {
-	Config map[string]string
+	Config types.Config
 }
 
-// GetMessageList gets the list of messages
-func (r *Messages) GetMessageList(params map[string]string) (types.MessageList, error) {
+// GetMessages gets the list of messages
+func (r *Messages) GetMessages(params map[string]string) (types.MessageList, error) {
 	result := types.MessageList{}
-	err := fetcher.Request("GET", "messages/v4/list", params, &result, r.Config["APIKey"], r.Config["APISecret"])
+	err := fetcher.Request("GET", "messages/v4/list", params, &result, r.Config.ApiKey, r.Config.ApiSecret)
 	if err != nil {
 		return result, err
 	}
@@ -26,7 +26,6 @@ func (r *Messages) GetMessageList(params map[string]string) (types.MessageList, 
 // Send sends a simple message
 func (r *Messages) Send(params map[string]interface{}) (types.MessageStruct, error) {
 	// Create a fetcher instance to access its properties
-	request := fetcher.NewFetcherInstance(r.Config["APIKey"], r.Config["APISecret"])
 
 	// Get the messages array
 	messagesArray, ok := params["messages"].([]map[string]interface{})
@@ -40,15 +39,15 @@ func (r *Messages) Send(params map[string]interface{}) (types.MessageStruct, err
 	}
 
 	// Create agent info
-	agent := map[string]string{"sdkVersion": request.SdkVersion, "osPlatform": request.OsPlatform}
+	// agent := map[string]string{"sdkVersion": fetcher.Fetcher.Request(), "osPlatform": request.OsPlatform}
 	// TODO: Will fix
 	//if request.AppId != "" {
 	//	agent["appId"] = request.AppId
 	//}
-	params["agent"] = agent
+	// params["agent"] = agent
 
 	result := types.MessageStruct{}
-	err := fetcher.Request("POST", "messages/v4/send-many/detail", params, &result, r.Config["APIKey"], r.Config["APISecret"])
+	err := fetcher.Request("POST", "messages/v4/send-many/detail", params, &result, r.Config.ApiKey, r.Config.ApiSecret)
 	if err != nil {
 		return result, err
 	}
@@ -59,15 +58,14 @@ func (r *Messages) Send(params map[string]interface{}) (types.MessageStruct, err
 // CreateGroup creeate message group
 func (r *Messages) CreateGroup(params map[string]string) (types.Group, error) {
 	// Create a fetcher instance to access its properties
-	request := fetcher.NewFetcherInstance(r.Config["APIKey"], r.Config["APISecret"])
-	params["sdkVersion"] = request.SdkVersion
-	params["osPlatform"] = request.OsPlatform
+	//params["sdkVersion"] = request.SdkVersion
+	//params["osPlatform"] = request.OsPlatform
 	// TODO: Will fix
 	//if request.AppId != "" {
 	//	params["appId"] = request.AppId
 	//}
 	result := types.Group{}
-	err := fetcher.Request("POST", "messages/v4/groups", params, &result, r.Config["APIKey"], r.Config["APISecret"])
+	err := fetcher.Request("POST", "messages/v4/groups", params, &result, r.Config.ApiKey, r.Config.ApiSecret)
 	if err != nil {
 		return result, err
 	}
@@ -79,7 +77,7 @@ func (r *Messages) CreateGroup(params map[string]string) (types.Group, error) {
 func (r *Messages) AddGroupMessage(groupId string, params interface{}) (types.AddGroupMessageList, error) {
 	result := types.AddGroupMessageList{}
 	url := fmt.Sprintf("messages/v4/groups/%s/messages", groupId)
-	err := fetcher.Request("PUT", url, params, &result, r.Config["APIKey"], r.Config["APISecret"])
+	err := fetcher.Request("PUT", url, params, &result, r.Config.ApiKey, r.Config.ApiSecret)
 	if err != nil {
 		return result, err
 	}
@@ -92,7 +90,7 @@ func (r *Messages) SendGroup(groupId string) (types.Group, error) {
 	result := types.Group{}
 	url := fmt.Sprintf("messages/v4/groups/%s/send", groupId)
 	params := make(map[string]string)
-	err := fetcher.Request("POST", url, params, &result, r.Config["APIKey"], r.Config["APISecret"])
+	err := fetcher.Request("POST", url, params, &result, r.Config.ApiKey, r.Config.ApiSecret)
 	if err != nil {
 		return result, err
 	}
@@ -105,7 +103,7 @@ func (r *Messages) DeleteGroup(groupId string) (types.Group, error) {
 	result := types.Group{}
 	url := fmt.Sprintf("messages/v4/groups/%s", groupId)
 	params := make(map[string]string)
-	err := fetcher.Request("DELETE", url, params, &result, r.Config["APIKey"], r.Config["APISecret"])
+	err := fetcher.Request("DELETE", url, params, &result, r.Config.ApiKey, r.Config.ApiSecret)
 	if err != nil {
 		return result, err
 	}
@@ -116,7 +114,7 @@ func (r *Messages) DeleteGroup(groupId string) (types.Group, error) {
 // GetGroupList gets the list of groups
 func (r *Messages) GetGroupList(params map[string]string) (types.GroupList, error) {
 	result := types.GroupList{}
-	err := fetcher.Request("GET", "messages/v4/groups", params, &result, r.Config["APIKey"], r.Config["APISecret"])
+	err := fetcher.Request("GET", "messages/v4/groups", params, &result, r.Config.ApiKey, r.Config.ApiSecret)
 	if err != nil {
 		return result, err
 	}
@@ -129,7 +127,7 @@ func (r *Messages) GetGroup(groupId string) (types.Group, error) {
 	result := types.Group{}
 	params := map[string]string{}
 	url := fmt.Sprintf("messages/v4/groups/%s", groupId)
-	err := fetcher.Request("GET", url, params, &result, r.Config["APIKey"], r.Config["APISecret"])
+	err := fetcher.Request("GET", url, params, &result, r.Config.ApiKey, r.Config.ApiSecret)
 	if err != nil {
 		return result, err
 	}
@@ -139,10 +137,9 @@ func (r *Messages) GetGroup(groupId string) (types.Group, error) {
 
 // GetGroupMessageList returns a list of group messages
 func (r *Messages) GetGroupMessageList(groupId string, params map[string]string) (types.MessageList, error) {
-	request := fetcher.NewFetcher(r.Config["APIKey"], r.Config["APISecret"])
 	result := types.MessageList{}
 	url := fmt.Sprintf("messages/v4/groups/%s/messages", groupId)
-	err := request.GET(url, params, &result)
+	err := fetcher.Request("GET", url, params, &result, r.Config.ApiKey, r.Config.ApiSecret)
 	if err != nil {
 		return result, err
 	}

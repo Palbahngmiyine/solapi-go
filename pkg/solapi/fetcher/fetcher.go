@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"log"
 	"net/http"
 	"runtime"
 
@@ -79,29 +81,6 @@ func Request(method string, resource string, params interface{}, customStruct in
 	return fetcher.Request(method, resource, params, customStruct)
 }
 
-// NewFetcher creates a new Fetcher instance with the provided API key and API secret
-// This is kept for backward compatibility
-func NewFetcher(apiKey, apiSecret string) *Fetcher {
-	goos := runtime.GOOS
-	goVersion := runtime.Version()
-	osPlatform := fmt.Sprintf("%s/%s", goos, goVersion)
-
-	fetcher := &Fetcher{
-		APIKey:     apiKey,
-		APISecret:  apiSecret,
-		Protocol:   "https",
-		Domain:     "api.solapi.com",
-		Prefix:     "",
-		SdkVersion: sdkVersion,
-		OsPlatform: osPlatform,
-	}
-
-	// Initialize authenticator
-	fetcher.Auth = authenticator.NewAuthenticator(apiKey, apiSecret)
-
-	return fetcher
-}
-
 // GET method request
 func (f *Fetcher) GET(resource string, params map[string]string, customStruct interface{}) error {
 	// Prepare for Http Request
@@ -130,7 +109,12 @@ func (f *Fetcher) GET(resource string, params map[string]string, customStruct in
 		fmt.Println(err)
 		return errFailedToClientRequest
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(resp.Body)
 
 	// StatusCode가 200이 아니라면 에러로 처리
 	if resp.StatusCode != 200 {
@@ -178,7 +162,12 @@ func (f *Fetcher) Request(method string, resource string, params interface{}, cu
 		fmt.Println(err)
 		return errFailedToClientRequest
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(resp.Body)
 
 	// StatusCode가 200이 아니라면 에러로 처리
 	if resp.StatusCode != 200 {

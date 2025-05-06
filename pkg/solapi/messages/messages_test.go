@@ -23,12 +23,9 @@ func getEnvOrDefault(key string, fallback string) string {
 // createMessagesInstance creates a Messages instance with the standard config
 func createMessagesInstance(serverURL string) *Messages {
 	return &Messages{
-		Config: map[string]string{
-			"APIKey":    getEnvOrDefault("SOLAPI_API_KEY", "test_api_key"),
-			"APISecret": getEnvOrDefault("SOLAPI_API_SECRET", "test_api_secret"),
-			"Protocol":  "http",
-			"Domain":    serverURL[7:], // Remove "http://" prefix
-			"Prefix":    "",
+		Config: types.Config{
+			ApiKey:    getEnvOrDefault("SOLAPI_API_KEY", "test_api_key"),
+			ApiSecret: getEnvOrDefault("SOLAPI_API_SECRET", "test_api_secret"),
 		},
 	}
 }
@@ -203,7 +200,7 @@ func TestGetMessageList(t *testing.T) {
 			messages := createMessagesInstance(server.URL)
 
 			// Call the function
-			result, err := messages.GetMessageList(tc.params)
+			result, err := messages.GetMessages(tc.params)
 
 			// Check error
 			if (err != nil) != tc.expectError {

@@ -4,6 +4,7 @@ import (
 	"github.com/solapi/solapi-go/pkg/solapi/cash"
 	"github.com/solapi/solapi-go/pkg/solapi/messages"
 	"github.com/solapi/solapi-go/pkg/solapi/storage"
+	"github.com/solapi/solapi-go/pkg/solapi/types"
 )
 
 // Client struct
@@ -18,9 +19,9 @@ func MessageService(apiKey string, apiSecret string) *Client {
 	client := Client{}
 
 	// Initialize config map for each service
-	config := map[string]string{
-		"APIKey":    apiKey,
-		"APISecret": apiSecret,
+	config := types.Config{
+		ApiKey:    apiKey,
+		ApiSecret: apiSecret,
 	}
 
 	// Assign config to each service

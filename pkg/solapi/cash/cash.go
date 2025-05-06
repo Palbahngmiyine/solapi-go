@@ -7,14 +7,14 @@ import (
 
 // Cash struct
 type Cash struct {
-	Config map[string]string
+	Config types.Config
 }
 
-// Balance get balance information
-func (r *Cash) Balance() (types.Balance, error) {
+// GetBalance get balance information
+func (r *Cash) GetBalance() (types.Balance, error) {
 	result := types.Balance{}
 	params := map[string]string{}
-	err := fetcher.Request("GET", "cash/v1/balance", params, &result, r.Config["APIKey"], r.Config["APISecret"])
+	err := fetcher.Request("GET", "cash/v1/balance", params, &result, r.Config.ApiKey, r.Config.ApiSecret)
 	if err != nil {
 		return result, err
 	}

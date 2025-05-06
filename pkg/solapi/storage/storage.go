@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"encoding/base64"
 	"errors"
-	"io/ioutil"
+	"io"
 	"os"
 
 	"github.com/solapi/solapi-go/pkg/solapi/fetcher"
@@ -18,7 +18,7 @@ var (
 
 // Storage struct
 type Storage struct {
-	Config map[string]string
+	Config types.Config
 }
 
 // UploadFile upload a file
@@ -38,7 +38,7 @@ func (r *Storage) UploadFile(params map[string]string) (types.File, error) {
 
 	// Read entire contents into byte slice.
 	reader := bufio.NewReader(f)
-	content, err := ioutil.ReadAll(reader)
+	content, err := io.ReadAll(reader)
 	if err != nil {
 		return result, errFailToReadFile
 	}
@@ -49,7 +49,7 @@ func (r *Storage) UploadFile(params map[string]string) (types.File, error) {
 	// Print encoded data to params.
 	params["file"] = encoded
 
-	err = fetcher.Request("POST", "storage/v1/files", params, &result, r.Config["APIKey"], r.Config["APISecret"])
+	err = fetcher.Request("POST", "storage/v1/files", params, &result, r.Config.ApiKey, r.Config.ApiSecret)
 	if err != nil {
 		return result, err
 	}
@@ -57,10 +57,10 @@ func (r *Storage) UploadFile(params map[string]string) (types.File, error) {
 	return result, nil
 }
 
-// GetFileList gets the list of files
-func (r *Storage) GetFileList(params map[string]string) (types.FileList, error) {
+// GetFiles gets the list of files
+func (r *Storage) GetFiles(params map[string]string) (types.FileList, error) {
 	result := types.FileList{}
-	err := fetcher.Request("GET", "storage/v1/files", params, &result, r.Config["APIKey"], r.Config["APISecret"])
+	err := fetcher.Request("GET", "storage/v1/files", params, &result, r.Config.ApiKey, r.Config.ApiSecret)
 	if err != nil {
 		return result, err
 	}
